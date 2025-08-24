@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Giảng Phonics Tương Tác</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        h3 {
+            color: #2e8b57;
+            text-align: center;
+        }
+        .main-content {
+            display: grid;
+            grid-template-areas:
+                "zone1 zone2 zone3"
+                "zone4 drag-area zone5"
+                "zone6 zone7 zone8";
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .drag-container {
+            grid-area: drag-area;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            flex-wrap: wrap;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            min-height: 250px;
+            transition: border-color 0.3s;
+        }
+        .draggable {
+            background-color: #e0f7e9;
+            color: #333;
+            padding: 10px 20px;
+            margin: 5px;
+            border: 1px solid #c8e6c9;
+            border-radius: 20px;
+            cursor: grab;
+            font-size: 1em;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .drop-zone {
+            background-color: #e9e9e9;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 120px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .drop-zone.hovered {
+            background-color: #d3e9d8;
+            border-color: #4CAF50;
+        }
+        .drop-zone h4 {
+            margin-top: 0;
+            font-size: 1em;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .drop-zone .dropped-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+        }
+        .drop-zone .dropped-words .draggable {
+            cursor: default;
+        }
+        .feedback {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        .correct {
+            color: #27ae60;
+        }
+        .incorrect {
+            color: #c0392b;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .button-group button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button-group button#checkBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .button-group button#checkBtn:hover {
+            background-color: #45a049;
+        }
+        .button-group button#resetBtn {
+            background-color: #f44336;
+            color: white;
+            margin-left: 10px;
+        }
+        .button-group button#resetBtn:hover {
+            background-color: #da190b;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-areas: none;
+                grid-template-columns: 1fr;
+            }
+            .drag-container {
+                order: -1; /* Đẩy vùng kéo thả lên đầu */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Luyện Tập Phonics: Kéo và Thả</h1>
+    <p style="text-align: center;">Hãy giúp các từ tìm về đúng "ngôi nhà" của âm Phonics tương ứng nhé!</p>
+
+    <div class="main-content">
+        <div class="drop-zone" data-phonics-group="ce" style="grid-area: zone1;">
+            <h4>Âm **-ce** (/s/)</h4>
+            <div class="dropped-words"></div>
+        </div>
+        <div class="drop-zone" data-phonics-group="ture" style="grid-area: zone2;">
+            <h4>Âm **-ture** (/tʃər/)</h4>
+            <div class="dropped-words"></div>
+        </div>
+        <div class="drop-zone" data-phonics-group="y_short" style="grid-area: zone3;">
+            <h4>Đuôi **-y** (/i/)</h4>
+            <div class="dropped-words"></div>
+        </div>
+        
+        <div id="dragContainer" class="drag-container">
+            </div>
+
+        <div class="drop-zone" data-phonics-group="ive" style="grid-area: zone4;">
+            <h4>Đuôi **-ive** (/ɪv/)</h4>
+            <div class="dropped-words"></div>
+        </div>
+        <div class="drop-zone" data-phonics-group="ate" style="grid-area: zone5;">
+            <h4>Đuôi **-ate** (/eɪt/ hoặc /ət/)</h4>
+            <div class="dropped-words"></div>
+        </div>
+        <div class="drop-zone" data-phonics-group="ear_different" style="grid-area: zone6;">
+            <h4>Âm **-ear** (Nhiều cách phát âm)</h4>
+            <div class="dropped-words"></div>
+        </div>
+        <div class="drop-zone" data-phonics-group="are" style="grid-area: zone7;">
+            <h4>Âm **-are** (/eər/)</h4>
+            <div class="dropped-words"></div>
+        </div>
+        <div class="drop-zone" data-phonics-group="le" style="grid-area: zone8;">
+            <h4>Đuôi **-le** (/l/)</h4>
+            <div class="dropped-words"></div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button id="checkBtn">Kiểm tra đáp án</button>
+        <button id="resetBtn">Làm lại</button>
+    </div>
+    
+    <div id="feedback" class="feedback"></div>
+
+</div>
+
+<script>
+    const phonicsData = {
+        ce: ['facecloth', 'experience', 'police', 'vice'],
+        y_short: ['fancy', 'poverty', 'happily', 'mystery'],
+        ture: ['future', 'adventure', 'nature', 'picture'],
+        le: ['table', 'little', 'apple', 'puzzle'],
+        ive: ['active', 'creative', 'native', 'collective'],
+        ate: ['excavate', 'separate', 'fortunate', 'passionate'],
+        ear_different: ['earner', 'fear', 'learn', 'bear'],
+        are: ['ware', 'share', 'prepare', 'aware']
+    };
+
+    const dragContainer = document.getElementById('dragContainer');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    const checkBtn = document.getElementById('checkBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const feedback = document.getElementById('feedback');
+
+    let correctCount = 0;
+    const totalWords = Object.values(phonicsData).flat().length;
+
+    function createDraggableWords() {
+        dragContainer.innerHTML = '';
+        const allWords = Object.keys(phonicsData).flatMap(key => 
+            phonicsData[key].map(word => ({ word, group: key }))
+        );
+        allWords.sort(() => Math.random() - 0.5); // Shuffle words
+
+        allWords.forEach(item => {
+            const wordEl = document.createElement('div');
+            wordEl.classList.add('draggable');
+            wordEl.draggable = true;
+            wordEl.textContent = item.word;
+            wordEl.dataset.group = item.group;
+            dragContainer.appendChild(wordEl);
+        });
+    }
+
+    function addEventListeners() {
+        const draggables = document.querySelectorAll('.draggable');
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('dragging');
+            });
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('dragging');
+            });
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                zone.classList.add('hovered');
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('hovered');
+            });
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('hovered');
+                const draggedItem = document.querySelector('.dragging');
+                if (draggedItem) {
+                    zone.querySelector('.dropped-words').appendChild(draggedItem);
+                }
+            });
+        });
+    }
+
+    function checkAnswers() {
+        correctCount = 0;
+        dropZones.forEach(zone => {
+            const wordsInZone = zone.querySelectorAll('.draggable');
+            const zoneGroup = zone.dataset.phonicsGroup;
+            wordsInZone.forEach(word => {
+                const wordGroup = word.dataset.group;
+                if (wordGroup === zoneGroup) {
+                    correctCount++;
+                    word.style.backgroundColor = '#d4edda';
+                    word.style.borderColor = '#c3e6cb';
+                } else {
+                    word.style.backgroundColor = '#f8d7da';
+                    word.style.borderColor = '#f5c6cb';
+                }
+            });
+        });
+        
+        feedback.textContent = `Bạn đã đúng ${correctCount} trên ${totalWords} từ.`;
+        if (correctCount === totalWords) {
+            feedback.classList.add('correct');
+            feedback.classList.remove('incorrect');
+        } else {
+            feedback.classList.add('incorrect');
+            feedback.classList.remove('correct');
+        }
+    }
+
+    function resetGame() {
+        feedback.textContent = '';
+        feedback.classList.remove('correct', 'incorrect');
+        dropZones.forEach(zone => {
+            const words = zone.querySelectorAll('.draggable');
+            words.forEach(word => {
+                word.style.backgroundColor = '';
+                word.style.borderColor = '';
+                dragContainer.appendChild(word);
+            });
+        });
+        createDraggableWords();
+        addEventListeners();
+    }
+
+    checkBtn.addEventListener('click', checkAnswers);
+    resetBtn.addEventListener('click', resetGame);
+
+    // Initial setup
+    createDraggableWords();
+    addEventListeners();
+</script>
+
+</body>
+</html>
